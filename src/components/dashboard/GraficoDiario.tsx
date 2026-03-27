@@ -11,7 +11,7 @@ export function GraficoDiario({ data }: { data: { day: string, gasto: number }[]
       </CardHeader>
       <CardContent>
         {data && data.length > 0 ? (
-          <div className="h-[300px]">
+          <div className="h-[200px] sm:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data}>
                 <XAxis 
@@ -44,7 +44,7 @@ export function GraficoDiario({ data }: { data: { day: string, gasto: number }[]
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="h-[300px] flex items-center justify-center text-gray-500 text-sm">
+          <div className="h-[200px] sm:h-[300px] flex items-center justify-center text-gray-500 text-sm">
             Nenhum gasto registrado neste mês.
           </div>
         )}
