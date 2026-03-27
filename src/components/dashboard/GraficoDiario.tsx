@@ -12,9 +12,50 @@ export function GraficoDiario({ data }: { data: { data: string, gasto: number, r
   }
 
   const formatarData = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+    try {
+      // Verificar se a string é válida
+      if (!dateStr || typeof dateStr !== 'string') {
+        return '--'
+      }
+      
+      // Tentar criar objeto Date
+      const date = new Date(dateStr)
+      
+      // Verificar se a data é válida
+      if (isNaN(date.getTime())) {
+        // Tentar formatos alternativos
+        const formats = [
+          dateStr, // Original
+          dateStr.replace(/\//g, '-'), // Trocar / por -
+          dateStr + 'T00:00:00', // Adicionar tempo
+          `${dateStr.split('-')[0]}-${dateStr.split('-')[1].padStart(2, '0')}-${dateStr.split('-')[2].padStart(2, '0')}` // Padronizar
+        ]
+        
+        for (const format of formats) {
+          const testDate = new Date(format)
+          if (!isNaN(testDate.getTime())) {
+            return testDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+          }
+        }
+        
+        return '--'
+      }
+      
+      return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+    } catch (error) {
+      console.warn('Erro ao formatar data:', dateStr, error)
+      return '--'
+    }
   }
+
+  // Filtrar dados inválidos
+  const dadosValidos = data.filter(item => {
+    return item && 
+           typeof item.data === 'string' && 
+           item.data.length > 0 &&
+           !isNaN(Number(item.gasto)) && 
+           !isNaN(Number(item.receita))
+  })
 
   return (
     <Card className="col-span-1 lg:col-span-2">
@@ -22,10 +63,10 @@ export function GraficoDiario({ data }: { data: { data: string, gasto: number, r
         <CardTitle>Fluxo do Mês</CardTitle>
       </CardHeader>
       <CardContent>
-        {data && data.length > 0 ? (
+        {dadosValidos && dadosValidos.length > 0 ? (
           <div className="h-[200px] sm:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data}>
+              <LineChart data={dadosValidos}>
                 <XAxis 
                   dataKey="data" 
                   stroke="#888888" 
