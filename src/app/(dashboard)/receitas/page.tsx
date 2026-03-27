@@ -41,11 +41,14 @@ export default function ReceitasPage() {
 
         // Aplicar filtros de período
         if (filtroPeriodo === 'mes') {
-          const currentMonth = new Date().toISOString().slice(0, 7)
-          query = query.or(`data_receita.like.${currentMonth}%,criado_em.like.${currentMonth}%`)
+          const hoje = new Date()
+          const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString()
+          const primeiroDiaProximo = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1).toISOString()
+          
+          query = query.or(`and(data_receita.gte.${primeiroDia},data_receita.lt.${primeiroDiaProximo}),and(criado_em.gte.${primeiroDia},criado_em.lt.${primeiroDiaProximo})`)
         } else if (filtroPeriodo === 'semana') {
           const umaSemanaAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-          query = query.gte('criado_em', umaSemanaAtras)
+          query = query.or(`data_receita.gte.${umaSemanaAtras},criado_em.gte.${umaSemanaAtras}`)
         }
 
         const { data, error } = await query
