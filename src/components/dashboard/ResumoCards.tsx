@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DollarSign, Activity, TrendingUp, AlertCircle } from 'lucide-react'
+import { DollarSign, Activity, TrendingUp, AlertCircle, TrendingDown, Wallet } from 'lucide-react'
 import Link from 'next/link'
 
 // Custom Hook for counting up
@@ -38,15 +38,19 @@ interface ResumoCardsProps {
   mediaDiaria: number
   maiorCategoria: string
   limiteMensal: number
+  totalReceitas: number
 }
 
-export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensal }: ResumoCardsProps) {
+export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensal, totalReceitas }: ResumoCardsProps) {
   const porcentagemUso = limiteMensal > 0 ? (totalMes / limiteMensal) * 100 : 0
+  const saldoLiquido = totalReceitas - totalMes
   
   // Animated values
   const animatedTotal = useCountUp(totalMes)
   const animatedMedia = useCountUp(mediaDiaria)
   const animatedPorc = useCountUp(porcentagemUso)
+  const animatedReceitas = useCountUp(totalReceitas)
+  const animatedSaldo = useCountUp(Math.abs(saldoLiquido))
 
   // Card styles glassmorphism
   const cardStyle = {
@@ -67,8 +71,8 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* Fade In Up entry classes implemented inline with varied staggering */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      {/* Gasto no Mês */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '100ms' }}>
         <Link href="/gastos" className="block h-full">
           <Card 
@@ -93,7 +97,60 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
         </Link>
       </div>
       
+      {/* Total de Receitas */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '200ms' }}>
+        <Link href="/gastos" className="block h-full">
+          <Card 
+            style={cardStyle} 
+            onMouseEnter={handleMouseEnter} 
+            onMouseLeave={handleMouseLeave}
+            className="h-full rounded-2xl"
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium text-gray-300">Total de Receitas</CardTitle>
+              <div className="p-2 sm:p-2.5 bg-green-500/10 rounded-lg">
+                <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-green-400" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl sm:text-3xl font-semibold text-white tracking-tight mb-1">
+                R$ {animatedReceitas.toFixed(2).replace('.', ',')}
+              </div>
+              <p className="text-xs text-green-400/80">Mês atual</p>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+      
+      {/* Saldo Líquido */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '300ms' }}>
+        <Link href="/gastos" className="block h-full">
+          <Card 
+            style={cardStyle} 
+            onMouseEnter={handleMouseEnter} 
+            onMouseLeave={handleMouseLeave}
+            className="h-full rounded-2xl"
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium text-gray-300">Saldo Líquido</CardTitle>
+              <div className={`p-2 sm:p-2.5 rounded-lg ${saldoLiquido >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
+                <Wallet className={`h-4 w-4 sm:h-5 sm:w-5 ${saldoLiquido >= 0 ? 'text-green-400' : 'text-red-400'}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className={`text-xl sm:text-3xl font-semibold tracking-tight mb-1 ${saldoLiquido >= 0 ? 'text-white' : 'text-red-400'}`}>
+                {saldoLiquido >= 0 ? '+' : '-'} R$ {animatedSaldo.toFixed(2).replace('.', ',')}
+              </div>
+              <p className={`text-xs ${saldoLiquido >= 0 ? 'text-green-400/80' : 'text-red-400/80'}`}>
+                Receitas - Gastos
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
+      
+      {/* Média Diária */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '400ms' }}>
         <Link href="/gastos" className="block h-full">
           <Card 
             style={cardStyle} 
@@ -117,7 +174,8 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
         </Link>
       </div>
       
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '300ms' }}>
+      {/* Maior Categoria */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '500ms' }}>
         <Link href="/gastos" className="block h-full">
           <Card 
             style={cardStyle} 
@@ -141,7 +199,8 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
         </Link>
       </div>
       
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '400ms' }}>
+      {/* Limite Mensal */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '600ms' }}>
         <Link href="/alertas" className="block h-full">
           <Card 
             style={cardStyle} 

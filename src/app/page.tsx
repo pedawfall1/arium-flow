@@ -26,7 +26,7 @@ export default function Home() {
                 Login
               </Button>
             </Link>
-            <Link href="https://buy.stripe.com/test_aFa5kF3Wu8AZaQZ0S79IQ03" target="_blank">
+            <Link href="/login">
               <Button className="bg-purple-600 hover:bg-purple-700 text-white font-medium border-0 shadow-[0_0_15px_rgba(147,51,234,0.3)]">
                 Começar Agora
               </Button>
@@ -50,7 +50,7 @@ export default function Home() {
                 Login
               </Button>
             </Link>
-            <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
               <Button className="w-full justify-start bg-purple-600 hover:bg-purple-700 text-white font-medium border-0">
                 Começar Agora
               </Button>
@@ -80,7 +80,7 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <Link href="https://buy.stripe.com/test_aFa5kF3Wu8AZaQZ0S79IQ03" target="_blank">
+              <Link href="/login">
                 <Button size="lg" className="w-full sm:w-auto px-8 h-14 text-base bg-white text-[#0D0618] hover:bg-gray-100 border-0">
                   Começar Agora
                 </Button>

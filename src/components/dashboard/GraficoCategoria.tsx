@@ -1,18 +1,49 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 
-const COLORS = ['#8B2BE2', '#C084FC', '#4A1A8A', '#a855f7', '#7e22ce', '#3b0764', '#d8b4fe']
+const COLORS_GASTOS = ['#8B2BE2', '#C084FC', '#4A1A8A', '#a855f7', '#7e22ce', '#3b0764', '#d8b4fe']
+const COLORS_RECEITAS = ['#22C55E', '#4ADE80', '#16A34A', '#86EFAC', '#15803D', '#14532D', '#BBF7D0']
 
-export function GraficoCategoria({ data }: { data: { name: string, value: number }[] }) {
+export function GraficoCategoria({ gastosData, receitasData }: { 
+  gastosData: { name: string, value: number }[], 
+  receitasData: { name: string, value: number }[] 
+}) {
+  const [tipo, setTipo] = useState<'gastos' | 'receitas'>('gastos')
+  
+  const dataAtual = tipo === 'gastos' ? gastosData : receitasData
+  const colors = tipo === 'gastos' ? COLORS_GASTOS : COLORS_RECEITAS
+  
   // If no data, show empty state
-  const chartData = data && data.length > 0 ? data : [{ name: 'Sem dados', value: 1 }]
+  const chartData = dataAtual && dataAtual.length > 0 ? dataAtual : [{ name: 'Sem dados', value: 1 }]
 
   return (
     <Card className="col-span-1">
-      <CardHeader>
-        <CardTitle>Gastos por Categoria</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <CardTitle>
+          {tipo === 'gastos' ? 'Gastos por Categoria' : 'Receitas por Categoria'}
+        </CardTitle>
+        <div className="flex gap-1">
+          <Button
+            size="sm"
+            variant={tipo === 'gastos' ? 'default' : 'outline'}
+            onClick={() => setTipo('gastos')}
+            className="text-xs"
+          >
+            Gastos
+          </Button>
+          <Button
+            size="sm"
+            variant={tipo === 'receitas' ? 'default' : 'outline'}
+            onClick={() => setTipo('receitas')}
+            className="text-xs"
+          >
+            Receitas
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
@@ -28,10 +59,10 @@ export function GraficoCategoria({ data }: { data: { name: string, value: number
                 dataKey="value"
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                 ))}
               </Pie>
-              {data && data.length > 0 && <Tooltip formatter={(value) => `R$ ${Number(value).toFixed(2).replace('.', ',')}`} />}
+              {dataAtual && dataAtual.length > 0 && <Tooltip formatter={(value) => `R$ ${Number(value).toFixed(2).replace('.', ',')}`} />}
               <Legend />
             </PieChart>
           </ResponsiveContainer>

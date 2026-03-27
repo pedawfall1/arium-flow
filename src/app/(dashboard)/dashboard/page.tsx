@@ -22,11 +22,13 @@ export default async function DashboardPage() {
   const [
     { data: profile },
     { data: gastos },
+    { data: receitas },
     { data: resumoData },
     { data: diarioData }
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('gastos').select('*').eq('user_id', user.id).order('criado_em', { ascending: false }).limit(50),
+    supabase.from('receitas').select('*').eq('user_id', user.id).order('criado_em', { ascending: false }).limit(50),
     supabase.from('resumo_mensal').select('*').eq('user_id', user.id) /* Adjust if view has 'mes' column: .eq('mes', currentMonth) */,
     supabase.from('gasto_diario').select('*').eq('user_id', user.id) /* Adjust if view has 'mes' column */
   ])
@@ -40,11 +42,18 @@ export default async function DashboardPage() {
     return isCurrentMonth ? acc + Number(curr.valor || 0) : acc;
   }, 0) || 0
 
+  const totalReceitas = receitas?.reduce((acc, curr) => {
+    // Basic JS logic to filter current month assuming 'data_receita' is 'YYYY-MM-DD'
+    const isCurrentMonth = curr.data_receita?.startsWith(currentMonth) || curr.criado_em?.startsWith(currentMonth);
+    return isCurrentMonth ? acc + Number(curr.valor || 0) : acc;
+  }, 0) || 0
+
   const elapsedDays = date.getDate()
   const mediaDiaria = elapsedDays > 0 ? totalMes / elapsedDays : 0
 
   // Category aggregations from View or fallback mapping
   let chartCatData = []
+  let chartReceitasData = []
   let maiorCategoriaNome = 'Sem gastos'
   
   if (resumoData && resumoData.length > 0) {
@@ -68,6 +77,14 @@ export default async function DashboardPage() {
       maiorCategoriaNome = maxCat.name
     }
   }
+
+  // Calculate receitas by category
+  const receitasGrouped = receitas?.reduce((acc: any, curr) => {
+    const cat = curr.categoria || 'Sem Categoria'
+    acc[cat] = (acc[cat] || 0) + Number(curr.valor)
+    return acc
+  }, {}) || {}
+  chartReceitasData = Object.keys(receitasGrouped).map(key => ({ name: key, value: receitasGrouped[key] }))
 
   // Daily Chart from View or fallback
   let chartDiarioData = []
@@ -102,11 +119,12 @@ export default async function DashboardPage() {
         mediaDiaria={mediaDiaria} 
         maiorCategoria={maiorCategoriaNome} 
         limiteMensal={limiteMensal} 
+        totalReceitas={totalReceitas}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <GraficoDiario data={chartDiarioData} />
-        <GraficoCategoria data={chartCatData} />
+        <GraficoCategoria gastosData={chartCatData} receitasData={chartReceitasData} />
       </div>
 
       <div className="grid gap-4">
