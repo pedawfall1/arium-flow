@@ -4,6 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from 'recharts'
 
 export function GraficoDiario({ data }: { data: { day: string, gasto: number, receita: number }[] }) {
+  const formatarMoeda = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value)
+  }
+
   return (
     <Card className="col-span-1 lg:col-span-2">
       <CardHeader>
@@ -26,11 +35,11 @@ export function GraficoDiario({ data }: { data: { day: string, gasto: number, re
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(value) => `R$${value}`}
+                  tickFormatter={(value) => formatarMoeda(Number(value))}
                 />
                 <Tooltip 
                   formatter={(value: any, name: any) => [
-                    `R$ ${Number(value).toFixed(2).replace('.', ',')}`, 
+                    formatarMoeda(Number(value)), 
                     name === 'gasto' ? 'Gasto' : 'Receita'
                   ]}
                   labelFormatter={(label) => `Dia ${label}`}
