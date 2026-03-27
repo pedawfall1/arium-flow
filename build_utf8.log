@@ -1,0 +1,238 @@
+﻿
+> arium-flow@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.2.1 (Turbopack)
+
+node.exe : ÔÜá The 
+"middleware" file 
+convention is 
+deprecated. Please use 
+"proxy" instead. Learn 
+more: https://nextjs.or
+g/docs/messages/middlew
+are-to-proxy
+No linha:1 caractere:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (ÔÜá The "midd   
+ le...leware-to-pro    
+xy:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build 
+failed with 3 errors:
+./src/app/(dashboard)/g
+astos/page.tsx:5:1
+Module not found: 
+Can't resolve 
+'@/components/ui/badge'
+  [90m3 |[0m 
+[36mimport[0m { 
+useState } 
+[36mfrom[0m 
+[32m'react'[0m
+  [90m4 |[0m 
+[36mimport[0m { 
+[33mCard[0m, 
+[33mCardContent[0m, 
+[33mCardHeader[0m, 
+[33mCardTitle[0m, [3
+3mCardDescription[0m 
+} [36mfrom[0m [32m'@
+/components/ui/...[0m
+[31m[1m>[0m [90m5 
+|[0m [36mimport[0m 
+{ [33mBadge[0m } 
+[36mfrom[0m [32m'@/c
+omponents/ui/badge'[0m
+  [90m  |[0m [31m[1
+m^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+[0m
+  [90m6 |[0m 
+[36mimport[0m { 
+[33mButton[0m } 
+[36mfrom[0m [32m'@/c
+omponents/ui/button'[0
+m
+  [90m7 |[0m 
+[36mimport[0m { 
+[33mInput[0m } 
+[36mfrom[0m [32m'@/c
+omponents/ui/input'[0m
+  [90m8 |[0m 
+[36mimport[0m { 
+[33mDownload[0m, 
+[33mPlus[0m, 
+[33mFilter[0m } 
+[36mfrom[0m 
+[32m'lucide-react'[0m
+
+Import map: aliased to 
+relative './src/compone
+nts/ui/badge' inside 
+of [project]/
+
+
+Import traces:
+  Client Component 
+Browser:
+    ./src/app/(dashboar
+d)/gastos/page.tsx 
+[Client Component 
+Browser]
+    ./src/app/(dashboar
+d)/gastos/page.tsx 
+[Server Component]
+
+  Client Component SSR:
+    ./src/app/(dashboar
+d)/gastos/page.tsx 
+[Client Component SSR]
+    ./src/app/(dashboar
+d)/gastos/page.tsx 
+[Server Component]
+
+https://nextjs.org/docs
+/messages/module-not-fo
+und
+
+
+./src/components/dashbo
+ard/TabelaGastos.tsx:4:
+1
+Module not found: 
+Can't resolve 
+'@/components/ui/badge'
+  [90m2 |[0m
+  [90m3 |[0m 
+[36mimport[0m { 
+[33mCard[0m, 
+[33mCardContent[0m, 
+[33mCardHeader[0m, 
+[33mCardTitle[0m } 
+[36mfrom[0m [32m'@/c
+omponents/ui/card'[0m
+[31m[1m>[0m [90m4 
+|[0m [36mimport[0m 
+{ [33mBadge[0m } 
+[36mfrom[0m [32m'@/c
+omponents/ui/badge'[0m
+  [90m  |[0m [31m[1
+m^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+[0m
+  [90m5 |[0m
+  [90m6 |[0m 
+[36mconst[0m gastos 
+= [
+  [90m7 |[0m   { id: 
+[35m1[0m, descricao: 
+[32m'Uber para o 
+aeroporto'[0m, valor: 
+[35m85.5[0m, 
+categoria: 
+[32m'Transporte'[0m, 
+data: [32m...[0m
+
+Import map: aliased to 
+relative './src/compone
+nts/ui/badge' inside 
+of [project]/
+
+
+Import trace:
+  Server Component:
+    ./src/components/da
+shboard/TabelaGastos.ts
+x
+    ./src/app/(dashboar
+d)/dashboard/page.tsx
+
+https://nextjs.org/docs
+/messages/module-not-fo
+und
+
+
+./src/app/(dashboard)/a
+lertas/page.tsx:2:1
+Module not found: 
+Can't resolve '@/compon
+ents/ui/switch'
+  [90m1 |[0m 
+[36mimport[0m { 
+[33mCard[0m, 
+[33mCardContent[0m, 
+[33mCardHeader[0m, 
+[33mCardTitle[0m, [3
+3mCardDescription[0m 
+} [36mfrom[0m [32m'@
+/components/ui/...[0m
+[31m[1m>[0m [90m2 
+|[0m [36mimport[0m 
+{ [33mSwitch[0m } 
+[36mfrom[0m [32m'@/c
+omponents/ui/switch'[0
+m
+  [90m  |[0m [31m[1
+m^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+^^[0m
+  [90m3 |[0m 
+[36mimport[0m { 
+[33mLabel[0m } 
+[36mfrom[0m [32m'@/c
+omponents/ui/label'[0m
+  [90m4 |[0m
+  [90m5 |[0m 
+[36mexport[0m 
+[36mdefault[0m 
+[36mfunction[0m 
+[33mAlertasPage[0m() 
+{
+
+Import map: aliased to 
+relative './src/compone
+nts/ui/switch' inside 
+of [project]/
+
+
+https://nextjs.org/docs
+/messages/module-not-fo
+und
+
+
+    at <unknown> (./src
+/app/(dashboard)/gastos
+/page.tsx:5:1)
+    at <unknown> (https
+://nextjs.org/docs/mess
+ages/module-not-found)
+    at <unknown> (./src
+/components/dashboard/T
+abelaGastos.tsx:4:1)
+    at <unknown> (https
+://nextjs.org/docs/mess
+ages/module-not-found)
+    at <unknown> (./src
+/app/(dashboard)/alerta
+s/page.tsx:2:1)
+    at <unknown> (https
+://nextjs.org/docs/mess
+ages/module-not-found)
