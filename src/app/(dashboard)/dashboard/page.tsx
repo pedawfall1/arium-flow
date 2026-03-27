@@ -70,7 +70,7 @@ export default async function DashboardPage() {
   let chartReceitasData = []
   let maiorCategoriaNome = 'Sem gastos'
   
-  if (resumoData && resumoData.length > 0) {
+  if (resumoData && resumoData.length > 0 && resumoData[0].categoria_nome) {
     // Suppose view columns: categoria_nome, total
     chartCatData = resumoData.map((row: any) => ({
       name: row.categoria_nome || 'Outros',
@@ -81,7 +81,7 @@ export default async function DashboardPage() {
   } else {
     // Fallback if view doesn't return data (e.g. not created yet or empty)
     const grouped = gastos?.reduce((acc: any, curr) => {
-      const cat = curr.categoria_nome || 'Sem Categoria'
+      const cat = curr.categoria_nome || curr.categoria || 'Sem Categoria'
       acc[cat] = (acc[cat] || 0) + Number(curr.valor)
       return acc
     }, {}) || {}
@@ -101,54 +101,54 @@ export default async function DashboardPage() {
   chartReceitasData = Object.keys(receitasGrouped).map(key => ({ name: key, value: receitasGrouped[key] }))
 
   // Daily Chart from View or fallback - agora com gastos e receitas
+  // Daily Chart from View or fallback - agora com gastos e receitas
   let chartDiarioData = []
-  if (diarioData && diarioData.length > 0) {
-    // View columns: dia (YYYY-MM-DD), total_gastos, total_receitas
-    chartDiarioData = diarioData.map((row: any) => ({
-      data: row.dia || '',
-      gasto: Number(row.total_gastos || 0),
-      receita: Number(row.total_receitas || 0)
-    }))
+  
+  // Initialize all days
+  const dailyData: Record<string, { gasto: number; receita: number }> = {}
+  const diasNoMes = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  
+  for (let i = 1; i <= diasNoMes; i++) {
+    const dayStr = i.toString().padStart(2, '0')
+    const dateStr = `${currentMonth}-${dayStr}`
+    dailyData[dateStr] = { gasto: 0, receita: 0 }
+  }
+
+  if (diarioData && diarioData.length > 0 && diarioData[0].dia) {
+    diarioData.forEach((row: any) => {
+      const dateStr = row.dia;
+      if (dateStr && dailyData[dateStr]) {
+        dailyData[dateStr].gasto = Number(row.total_gastos || 0);
+        dailyData[dateStr].receita = Number(row.total_receitas || 0);
+      }
+    });
   } else {
-    // Fallback: Group current month expenses and income by day
-    const dailyData: Record<string, { gasto: number; receita: number }> = {}
-    const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-    
-    // Initialize all days
-    for (let i = 1; i <= daysInMonth; i++) {
-      const dayStr = i.toString().padStart(2, '0')
-      const dateStr = `${currentMonth}-${dayStr}`
-      dailyData[dateStr] = { gasto: 0, receita: 0 }
-    }
-    
     // Sum expenses by day
     gastos?.forEach((gasto) => {
-      if (gasto.data_gasto?.startsWith(currentMonth)) {
-        const dateStr = gasto.data_gasto.split(' ')[0] // Remove time part if exists
-        if (dailyData[dateStr]) {
-          dailyData[dateStr].gasto += Number(gasto.valor || 0)
-        }
+      const dataString = gasto.data_gasto || gasto.criado_em || '';
+      const dateStr = dataString.split('T')[0].split(' ')[0];
+      if (dateStr && dailyData[dateStr]) {
+        dailyData[dateStr].gasto += Number(gasto.valor || 0)
       }
     })
     
     // Sum income by day
     receitas?.forEach((receita) => {
-      if (receita.data_receita?.startsWith(currentMonth)) {
-        const dateStr = receita.data_receita.split(' ')[0] // Remove time part if exists
-        if (dailyData[dateStr]) {
-          dailyData[dateStr].receita += Number(receita.valor || 0)
-        }
+      const dataString = receita.data_receita || receita.criado_em || '';
+      const dateStr = dataString.split('T')[0].split(' ')[0];
+      if (dateStr && dailyData[dateStr]) {
+        dailyData[dateStr].receita += Number(receita.valor || 0)
       }
     })
-    
-    chartDiarioData = Object.keys(dailyData)
-      .sort() // Sort by date
-      .map(date => ({
-        data: date,
-        gasto: dailyData[date].gasto,
-        receita: dailyData[date].receita
-      }))
   }
+  
+  chartDiarioData = Object.keys(dailyData)
+    .sort() // Sort by date
+    .map(dateKey => ({
+      data: dateKey,
+      gasto: dailyData[dateKey].gasto,
+      receita: dailyData[dateKey].receita
+    }))
 
   return (
     <div className="space-y-6">

@@ -17,8 +17,9 @@ export function GraficoCategoria({ gastosData, receitasData }: {
   const dataAtual = tipo === 'gastos' ? gastosData : receitasData
   const colors = tipo === 'gastos' ? COLORS_GASTOS : COLORS_RECEITAS
   
-  // If no data, show empty state
-  const chartData = dataAtual && dataAtual.length > 0 ? dataAtual : [{ name: 'Sem dados', value: 1 }]
+  // Filter out zero values and apply default if empty
+  const hasData = dataAtual && dataAtual.length > 0 && dataAtual.some(d => d.value > 0)
+  const chartData = hasData ? dataAtual.filter(d => d.value > 0) : [{ name: 'Sem dados', value: 1 }]
 
   return (
     <Card className="col-span-1">

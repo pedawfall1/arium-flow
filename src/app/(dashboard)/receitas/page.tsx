@@ -69,30 +69,39 @@ export default function ReceitasPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      const channel = supabase
-        .channel('realtime-receitas-page')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'receitas',
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload) => {
-            if (payload.eventType === 'INSERT') {
-              setReceitas((prev) => [payload.new as Receita, ...prev])
-            } else if (payload.eventType === 'UPDATE') {
-              setReceitas((prev) => prev.map(r => r.id === payload.new.id ? payload.new as Receita : r))
-            } else if (payload.eventType === 'DELETE') {
-              setReceitas((prev) => prev.filter(r => r.id !== payload.old.id))
+      let channel: any;
+      try {
+        channel = supabase
+          .channel('realtime-receitas-page')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'receitas',
+              filter: `user_id=eq.${user.id}`,
+            },
+            (payload) => {
+              if (payload.eventType === 'INSERT') {
+                setReceitas((prev) => [payload.new as Receita, ...prev])
+              } else if (payload.eventType === 'UPDATE') {
+                setReceitas((prev) => prev.map(r => r.id === payload.new.id ? payload.new as Receita : r))
+              } else if (payload.eventType === 'DELETE') {
+                setReceitas((prev) => prev.filter(r => r.id !== payload.old.id))
+              }
             }
-          }
-        )
-        .subscribe()
+          )
+          .subscribe()
+      } catch (error) {
+        console.error('Erro ao configurar realtime receitas:', error)
+      }
 
       return () => {
-        supabase.removeChannel(channel)
+        try {
+          if (channel) supabase.removeChannel(channel)
+        } catch (error) {
+          console.error('Erro ao remover canal:', error)
+        }
       }
     }
 

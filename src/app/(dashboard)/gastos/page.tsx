@@ -84,61 +84,72 @@ export default function GastosPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      // Realtime para gastos
-      const gastosChannel = supabase
-        .channel('realtime-gastos-page')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'gastos',
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload) => {
-            if (payload.eventType === 'INSERT') {
-              setTransacoes((prev) => {
-                const novaTransacao = { ...payload.new as any, tipo: 'gasto' as const }
-                return [novaTransacao, ...prev].sort((a, b) => new Date(b.data_gasto || b.data_receita || b.criado_em).getTime() - new Date(a.data_gasto || a.data_receita || a.criado_em).getTime())
-              })
-            } else if (payload.eventType === 'UPDATE') {
-              setTransacoes((prev) => prev.map(t => t.id === payload.new.id ? { ...payload.new as any, tipo: 'gasto' as const } : t))
-            } else if (payload.eventType === 'DELETE') {
-              setTransacoes((prev) => prev.filter(t => t.id !== payload.old.id))
+      let gastosChannel: any;
+      let receitasChannel: any;
+      
+      try {
+        // Realtime para gastos
+        gastosChannel = supabase
+          .channel('realtime-gastos-page')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'gastos',
+              filter: `user_id=eq.${user.id}`,
+            },
+            (payload) => {
+              if (payload.eventType === 'INSERT') {
+                setTransacoes((prev) => {
+                  const novaTransacao = { ...payload.new as any, tipo: 'gasto' as const }
+                  return [novaTransacao, ...prev].sort((a, b) => new Date(b.data_gasto || b.data_receita || b.criado_em).getTime() - new Date(a.data_gasto || a.data_receita || a.criado_em).getTime())
+                })
+              } else if (payload.eventType === 'UPDATE') {
+                setTransacoes((prev) => prev.map(t => t.id === payload.new.id ? { ...payload.new as any, tipo: 'gasto' as const } : t))
+              } else if (payload.eventType === 'DELETE') {
+                setTransacoes((prev) => prev.filter(t => t.id !== payload.old.id))
+              }
             }
-          }
-        )
-        .subscribe()
+          )
+          .subscribe()
 
-      // Realtime para receitas
-      const receitasChannel = supabase
-        .channel('realtime-receitas-page')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'receitas',
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload) => {
-            if (payload.eventType === 'INSERT') {
-              setTransacoes((prev) => {
-                const novaTransacao = { ...payload.new as any, tipo: 'receita' as const }
-                return [novaTransacao, ...prev].sort((a, b) => new Date(b.data_gasto || b.data_receita || b.criado_em).getTime() - new Date(a.data_gasto || a.data_receita || a.criado_em).getTime())
-              })
-            } else if (payload.eventType === 'UPDATE') {
-              setTransacoes((prev) => prev.map(t => t.id === payload.new.id ? { ...payload.new as any, tipo: 'receita' as const } : t))
-            } else if (payload.eventType === 'DELETE') {
-              setTransacoes((prev) => prev.filter(t => t.id !== payload.old.id))
+        // Realtime para receitas
+        receitasChannel = supabase
+          .channel('realtime-receitas-page')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'receitas',
+              filter: `user_id=eq.${user.id}`,
+            },
+            (payload) => {
+              if (payload.eventType === 'INSERT') {
+                setTransacoes((prev) => {
+                  const novaTransacao = { ...payload.new as any, tipo: 'receita' as const }
+                  return [novaTransacao, ...prev].sort((a, b) => new Date(b.data_gasto || b.data_receita || b.criado_em).getTime() - new Date(a.data_gasto || a.data_receita || a.criado_em).getTime())
+                })
+              } else if (payload.eventType === 'UPDATE') {
+                setTransacoes((prev) => prev.map(t => t.id === payload.new.id ? { ...payload.new as any, tipo: 'receita' as const } : t))
+              } else if (payload.eventType === 'DELETE') {
+                setTransacoes((prev) => prev.filter(t => t.id !== payload.old.id))
+              }
             }
-          }
-        )
-        .subscribe()
+          )
+          .subscribe()
+      } catch (error) {
+        console.error('Erro ao configurar realtime transacoes:', error)
+      }
 
       return () => {
-        supabase.removeChannel(gastosChannel)
-        supabase.removeChannel(receitasChannel)
+        try {
+          if (gastosChannel) supabase.removeChannel(gastosChannel)
+          if (receitasChannel) supabase.removeChannel(receitasChannel)
+        } catch (error) {
+          console.error('Erro ao remover canal:', error)
+        }
       }
     }
 

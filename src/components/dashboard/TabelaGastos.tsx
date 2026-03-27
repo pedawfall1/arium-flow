@@ -18,106 +18,108 @@ export function TabelaGastos({ initialGastos, userId }: { initialGastos: any[], 
 
     console.log('Configurando Realtime para TabelaGastos, userId:', userId)
 
-    // Realtime para gastos
-    const gastosChannel = supabase
-      .channel('realtime-gastos-dashboard')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'gastos',
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          console.log('Realtime event recebido no TabelaGastos (gastos):', payload)
-          
-          if (payload.eventType === 'INSERT') {
-            console.log('INSERT recebido:', payload.new)
-            setGastos((prev) => {
-              const novos = [payload.new as any, ...prev].sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
-              console.log('Novos gastos após INSERT:', novos)
-              return novos
-            })
-          } else if (payload.eventType === 'UPDATE') {
-            console.log('UPDATE recebido:', payload.new)
-            setGastos((prev) => {
-              const atualizados = prev.map(g => g.id === payload.new.id ? payload.new as any : g)
-              console.log('Gastos após UPDATE:', atualizados)
-              return atualizados
-            })
-          } else if (payload.eventType === 'DELETE') {
-            console.log('DELETE recebido:', payload.old)
-            setGastos((prev) => {
-              const filtrados = prev.filter(g => g.id !== payload.old.id)
-              console.log('Gastos após DELETE:', filtrados)
-              return filtrados
-            })
-          }
-        }
-      )
-      .subscribe((status) => {
-        console.log('Status do subscription Realtime TabelaGastos (gastos):', status)
-      })
+    let gastosChannel: any;
+    let receitasChannel: any;
 
-    // Realtime para receitas
-    const receitasChannel = supabase
-      .channel('realtime-receitas-dashboard')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'receitas',
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          console.log('Realtime event recebido no TabelaGastos (receitas):', payload)
-          
-          // Para TabelaGastos, vamos adicionar receitas como se fossem gastos
-          // com um tipo diferente para diferenciar visualmente
-          if (payload.eventType === 'INSERT') {
-            const receitaComoGasto = {
-              ...payload.new,
-              tipo: 'receita',
-              fonte: payload.new.fonte || 'manual'
+    try {
+      // Realtime para gastos
+      gastosChannel = supabase
+        .channel('realtime-gastos-dashboard')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'gastos',
+            filter: `user_id=eq.${userId}`,
+          },
+          (payload) => {
+            console.log('Realtime event recebido no TabelaGastos (gastos):', payload)
+            
+            if (payload.eventType === 'INSERT') {
+              console.log('INSERT recebido:', payload.new)
+              setGastos((prev) => {
+                const novos = [payload.new as any, ...prev].sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
+                return novos
+              })
+            } else if (payload.eventType === 'UPDATE') {
+              console.log('UPDATE recebido:', payload.new)
+              setGastos((prev) => {
+                const atualizados = prev.map(g => g.id === payload.new.id ? payload.new as any : g)
+                return atualizados
+              })
+            } else if (payload.eventType === 'DELETE') {
+              console.log('DELETE recebido:', payload.old)
+              setGastos((prev) => {
+                const filtrados = prev.filter(g => g.id !== payload.old.id)
+                return filtrados
+              })
             }
-            console.log('INSERT receita convertido:', receitaComoGasto)
-            setGastos((prev) => {
-              const novos = [receitaComoGasto, ...prev].sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
-              console.log('Novos gastos após INSERT receita:', novos)
-              return novos
-            })
-          } else if (payload.eventType === 'UPDATE') {
-            const receitaComoGasto = {
-              ...payload.new,
-              tipo: 'receita',
-              fonte: payload.new.fonte || 'manual'
-            }
-            console.log('UPDATE receita convertido:', receitaComoGasto)
-            setGastos((prev) => {
-              const atualizados = prev.map(g => g.id === payload.new.id ? receitaComoGasto : g)
-              console.log('Gastos após UPDATE receita:', atualizados)
-              return atualizados
-            })
-          } else if (payload.eventType === 'DELETE') {
-            console.log('DELETE receita recebido:', payload.old)
-            setGastos((prev) => {
-              const filtrados = prev.filter(g => g.id !== payload.old.id)
-              console.log('Gastos após DELETE receita:', filtrados)
-              return filtrados
-            })
           }
-        }
-      )
-      .subscribe((status) => {
-        console.log('Status do subscription Realtime TabelaGastos (receitas):', status)
-      })
+        )
+        .subscribe((status, err) => {
+          if (err) console.error('Erro realtime gastos:', err)
+          console.log('Status do subscription Realtime TabelaGastos (gastos):', status)
+        })
+
+      // Realtime para receitas
+      receitasChannel = supabase
+        .channel('realtime-receitas-dashboard')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'receitas',
+            filter: `user_id=eq.${userId}`,
+          },
+          (payload) => {
+            console.log('Realtime event recebido no TabelaGastos (receitas):', payload)
+            
+            if (payload.eventType === 'INSERT') {
+              const receitaComoGasto = {
+                ...payload.new,
+                tipo: 'receita',
+                fonte: payload.new.fonte || 'manual'
+              }
+              setGastos((prev) => {
+                const novos = [receitaComoGasto, ...prev].sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
+                return novos
+              })
+            } else if (payload.eventType === 'UPDATE') {
+              const receitaComoGasto = {
+                ...payload.new,
+                tipo: 'receita',
+                fonte: payload.new.fonte || 'manual'
+              }
+              setGastos((prev) => {
+                const atualizados = prev.map(g => g.id === payload.new.id ? receitaComoGasto : g)
+                return atualizados
+              })
+            } else if (payload.eventType === 'DELETE') {
+              setGastos((prev) => {
+                const filtrados = prev.filter(g => g.id !== payload.old.id)
+                return filtrados
+              })
+            }
+          }
+        )
+        .subscribe((status, err) => {
+          if (err) console.error('Erro realtime receitas:', err)
+          console.log('Status do subscription Realtime TabelaGastos (receitas):', status)
+        })
+    } catch (error) {
+      console.error('Uncaught error setup realtime TabelaGastos:', error)
+    }
 
     return () => {
       console.log('Removendo canal Realtime TabelaGastos')
-      supabase.removeChannel(gastosChannel)
-      supabase.removeChannel(receitasChannel)
+      try {
+        if (gastosChannel) supabase.removeChannel(gastosChannel)
+        if (receitasChannel) supabase.removeChannel(receitasChannel)
+      } catch (err) {
+        console.error('Erro ao remover canal:', err)
+      }
     }
   }, [supabase, userId])
 
