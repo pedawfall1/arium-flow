@@ -35,36 +35,22 @@ function useCountUp(end: number, duration: number = 1000) {
 
 interface ResumoCardsProps {
   totalMes: number
-  mediaDiaria: number
-  maiorCategoria: string
-  percentualComprometido: number
-  baseCalculo: number
   totalReceitas: number
   saldoLiquido: number
-  previsaoFimMes: number
-  orcamentoDiarioRestante: number
+  maiorCategoria: string
 }
 
 export function ResumoCards({ 
   totalMes, 
-  mediaDiaria, 
-  maiorCategoria, 
-  percentualComprometido,
-  baseCalculo,
-  totalReceitas,
+  totalReceitas, 
   saldoLiquido,
-  previsaoFimMes,
-  orcamentoDiarioRestante
+  maiorCategoria
 }: ResumoCardsProps) {
   
   // Animated values
   const animatedTotal = useCountUp(totalMes)
-  const animatedMedia = useCountUp(mediaDiaria)
-  const animatedComprometido = useCountUp(percentualComprometido)
   const animatedReceitas = useCountUp(totalReceitas)
   const animatedSaldo = useCountUp(Math.abs(saldoLiquido))
-  const animatedPrevisao = useCountUp(previsaoFimMes)
-  const animatedOrcamento = useCountUp(Math.abs(orcamentoDiarioRestante))
 
   // Card styles glassmorphism
   const cardStyle = {
@@ -85,7 +71,7 @@ export function ResumoCards({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4 xl:grid-cols-7">
+    <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4 xl:grid-cols-4">
       {/* Gasto no Mês */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '100ms' }}>
         <Link href="/gastos" className="block h-full">
@@ -162,61 +148,9 @@ export function ResumoCards({
           </Card>
         </Link>
       </div>
-
-      {/* Previsão de Fim de Mês */}
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '400ms' }}>
-        <Link href="/gastos" className="block h-full">
-          <Card 
-            style={cardStyle} 
-            onMouseEnter={handleMouseEnter} 
-            onMouseLeave={handleMouseLeave}
-            className="h-full rounded-xl sm:rounded-2xl p-3 sm:p-4"
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0">
-              <CardTitle className="text-[11px] sm:text-xs font-medium text-gray-300">Previsão Fim Mês</CardTitle>
-              <div className={`p-1.5 sm:p-2 rounded-lg ${previsaoFimMes > totalReceitas ? 'bg-orange-500/10' : 'bg-blue-500/10'}`}>
-                <Activity className={`h-3 w-3 sm:h-4 sm:w-4 ${previsaoFimMes > totalReceitas ? 'text-orange-400' : 'text-blue-400'}`} />
-              </div>
-            </CardHeader>
-            <CardContent className="px-0 pb-0">
-              <div className={`text-[1.25rem] sm:text-xl sm:text-3xl font-semibold tracking-tight mb-1 ${previsaoFimMes > totalReceitas ? 'text-orange-400' : 'text-white'}`}>
-                R$ {animatedPrevisao.toFixed(2).replace('.', ',')}
-              </div>
-              <p className={`text-[10px] sm:text-xs ${previsaoFimMes > totalReceitas ? 'text-orange-400/80' : 'text-blue-400/80'}`}>
-                {previsaoFimMes > totalReceitas ? 'Acima das receitas' : 'Dentro do previsto'}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
-      
-      {/* Média Diária */}
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '500ms' }}>
-        <Link href="/gastos" className="block h-full">
-          <Card 
-            style={cardStyle} 
-            onMouseEnter={handleMouseEnter} 
-            onMouseLeave={handleMouseLeave}
-            className="h-full rounded-xl sm:rounded-2xl p-3 sm:p-4"
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0">
-              <CardTitle className="text-[11px] sm:text-xs font-medium text-gray-300">Média Diária</CardTitle>
-              <div className="p-1.5 sm:p-2 bg-blue-500/10 rounded-lg">
-                <Activity className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400" />
-              </div>
-            </CardHeader>
-            <CardContent className="px-0 pb-0">
-              <div className="text-[1.25rem] sm:text-xl sm:text-3xl font-semibold text-white tracking-tight mb-1">
-                R$ {animatedMedia.toFixed(2).replace('.', ',')}
-              </div>
-              <p className="text-[10px] sm:text-xs text-blue-400/80">Média de gastos</p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
       
       {/* Maior Categoria */}
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '600ms' }}>
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '400ms' }}>
         <Link href="/gastos" className="block h-full">
           <Card 
             style={cardStyle} 
@@ -235,33 +169,6 @@ export function ResumoCards({
                 {maiorCategoria}
               </div>
               <p className="text-[10px] sm:text-xs text-teal-400/80">Mais consumida</p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
-      
-      {/* Comprometido */}
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '700ms' }}>
-        <Link href="/gastos" className="block h-full">
-          <Card 
-            style={cardStyle} 
-            onMouseEnter={handleMouseEnter} 
-            onMouseLeave={handleMouseLeave}
-            className="h-full rounded-xl sm:rounded-2xl p-3 sm:p-4"
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0">
-              <CardTitle className="text-[11px] sm:text-xs font-medium text-gray-300">Comprometido</CardTitle>
-              <div className={`p-1.5 sm:p-2 rounded-lg ${percentualComprometido > 80 ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-                <AlertCircle className={`h-3 w-3 sm:h-4 sm:w-4 ${percentualComprometido > 80 ? 'text-red-400' : 'text-green-400'}`} />
-              </div>
-            </CardHeader>
-            <CardContent className="px-0 pb-0">
-              <div className={`text-[1.25rem] sm:text-xl sm:text-3xl font-semibold tracking-tight mb-1 ${percentualComprometido > 80 ? 'text-red-400' : 'text-white'}`}>
-                {animatedComprometido.toFixed(1)}%
-              </div>
-              <p className={`text-[10px] sm:text-xs ${percentualComprometido > 80 ? 'text-red-400/80' : 'text-green-400/80'}`}>
-                {baseCalculo === totalReceitas ? 'Das receitas do mês' : 'Do limite mensal'}
-              </p>
             </CardContent>
           </Card>
         </Link>

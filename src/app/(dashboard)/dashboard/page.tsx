@@ -100,25 +100,51 @@ export default async function DashboardPage() {
   }, {}) || {}
   chartReceitasData = Object.keys(receitasGrouped).map(key => ({ name: key, value: receitasGrouped[key] }))
 
-  // Daily Chart from View or fallback
+  // Daily Chart from View or fallback - agora com gastos e receitas
   let chartDiarioData = []
   if (diarioData && diarioData.length > 0) {
-    // Suppose view columns: dia (YYYY-MM-DD), total
+    // View columns: dia (YYYY-MM-DD), total_gastos, total_receitas
     chartDiarioData = diarioData.map((row: any) => ({
       day: row.dia?.slice(-2) || '00',  // get 'DD'
-      gasto: Number(row.total || 0)
+      gasto: Number(row.total_gastos || 0),
+      receita: Number(row.total_receitas || 0)
     }))
   } else {
-    // Fallback: Group current month expenses by day
-    const groupedDiario = gastos?.reduce((acc: any, curr) => {
-      const gDate = curr.data_gasto || (curr.criado_em && curr.criado_em.split('T')[0])
-      if (gDate && gDate.startsWith(currentMonth)) {
-        const day = gDate.slice(-2)
-        acc[day] = (acc[day] || 0) + Number(curr.valor)
+    // Fallback: Group current month expenses and income by day
+    const dailyData: Record<string, { gasto: number; receita: number }> = {}
+    const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+    
+    // Initialize all days
+    for (let i = 1; i <= daysInMonth; i++) {
+      const dayStr = i.toString().padStart(2, '0')
+      dailyData[dayStr] = { gasto: 0, receita: 0 }
+    }
+    
+    // Sum expenses by day
+    gastos?.forEach((gasto) => {
+      if (gasto.data_gasto?.startsWith(currentMonth)) {
+        const day = gasto.data_gasto.slice(-2)
+        if (dailyData[day]) {
+          dailyData[day].gasto += Number(gasto.valor || 0)
+        }
       }
-      return acc
-    }, {}) || {}
-    chartDiarioData = Object.keys(groupedDiario).sort().map(key => ({ day: key, gasto: groupedDiario[key] }))
+    })
+    
+    // Sum income by day
+    receitas?.forEach((receita) => {
+      if (receita.data_receita?.startsWith(currentMonth)) {
+        const day = receita.data_receita.slice(-2)
+        if (dailyData[day]) {
+          dailyData[day].receita += Number(receita.valor || 0)
+        }
+      }
+    })
+    
+    chartDiarioData = Object.keys(dailyData).map(day => ({
+      day,
+      gasto: dailyData[day].gasto,
+      receita: dailyData[day].receita
+    }))
   }
 
   return (
@@ -130,14 +156,9 @@ export default async function DashboardPage() {
 
       <ResumoCards 
         totalMes={totalMes} 
-        mediaDiaria={mediaDiaria} 
-        maiorCategoria={maiorCategoriaNome} 
-        percentualComprometido={percentualComprometido}
-        baseCalculo={baseCalculo}
         totalReceitas={totalReceitas}
         saldoLiquido={saldoLiquido}
-        previsaoFimMes={previsaoFimMes}
-        orcamentoDiarioRestante={orcamentoDiarioRestante}
+        maiorCategoria={maiorCategoriaNome}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
