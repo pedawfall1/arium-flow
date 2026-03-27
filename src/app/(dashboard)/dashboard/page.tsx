@@ -48,8 +48,22 @@ export default async function DashboardPage() {
     return isCurrentMonth ? acc + Number(curr.valor || 0) : acc;
   }, 0) || 0
 
+  const saldoLiquido = totalReceitas - totalMes
+  
+  // Cálculo do percentual comprometido
+  const baseCalculo = totalReceitas > 0 ? totalReceitas : limiteMensal
+  const percentualComprometido = baseCalculo > 0 ? (totalMes / baseCalculo) * 100 : 0
+  
+  // Previsão de fim de mês
   const elapsedDays = date.getDate()
+  const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  const remainingDays = daysInMonth - elapsedDays
   const mediaDiaria = elapsedDays > 0 ? totalMes / elapsedDays : 0
+  const previsaoFimMes = mediaDiaria * daysInMonth
+  
+  // Orçamento diário restante (para Modo Sobrevivência)
+  const baseDisponivel = totalReceitas > 0 ? totalReceitas : limiteMensal
+  const orcamentoDiarioRestante = remainingDays > 0 ? (baseDisponivel - totalMes) / remainingDays : 0
 
   // Category aggregations from View or fallback mapping
   let chartCatData = []
@@ -118,8 +132,12 @@ export default async function DashboardPage() {
         totalMes={totalMes} 
         mediaDiaria={mediaDiaria} 
         maiorCategoria={maiorCategoriaNome} 
-        limiteMensal={limiteMensal} 
+        percentualComprometido={percentualComprometido}
+        baseCalculo={baseCalculo}
         totalReceitas={totalReceitas}
+        saldoLiquido={saldoLiquido}
+        previsaoFimMes={previsaoFimMes}
+        orcamentoDiarioRestante={orcamentoDiarioRestante}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

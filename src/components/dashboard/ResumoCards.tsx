@@ -37,20 +37,34 @@ interface ResumoCardsProps {
   totalMes: number
   mediaDiaria: number
   maiorCategoria: string
-  limiteMensal: number
+  percentualComprometido: number
+  baseCalculo: number
   totalReceitas: number
+  saldoLiquido: number
+  previsaoFimMes: number
+  orcamentoDiarioRestante: number
 }
 
-export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensal, totalReceitas }: ResumoCardsProps) {
-  const porcentagemUso = limiteMensal > 0 ? (totalMes / limiteMensal) * 100 : 0
-  const saldoLiquido = totalReceitas - totalMes
+export function ResumoCards({ 
+  totalMes, 
+  mediaDiaria, 
+  maiorCategoria, 
+  percentualComprometido,
+  baseCalculo,
+  totalReceitas,
+  saldoLiquido,
+  previsaoFimMes,
+  orcamentoDiarioRestante
+}: ResumoCardsProps) {
   
   // Animated values
   const animatedTotal = useCountUp(totalMes)
   const animatedMedia = useCountUp(mediaDiaria)
-  const animatedPorc = useCountUp(porcentagemUso)
+  const animatedComprometido = useCountUp(percentualComprometido)
   const animatedReceitas = useCountUp(totalReceitas)
   const animatedSaldo = useCountUp(Math.abs(saldoLiquido))
+  const animatedPrevisao = useCountUp(previsaoFimMes)
+  const animatedOrcamento = useCountUp(Math.abs(orcamentoDiarioRestante))
 
   // Card styles glassmorphism
   const cardStyle = {
@@ -71,7 +85,7 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4">
       {/* Gasto no Mês */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '100ms' }}>
         <Link href="/gastos" className="block h-full">
@@ -148,9 +162,36 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
           </Card>
         </Link>
       </div>
+
+      {/* Previsão de Fim de Mês */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '400ms' }}>
+        <Link href="/gastos" className="block h-full">
+          <Card 
+            style={cardStyle} 
+            onMouseEnter={handleMouseEnter} 
+            onMouseLeave={handleMouseLeave}
+            className="h-full rounded-2xl"
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium text-gray-300">Previsão Fim Mês</CardTitle>
+              <div className={`p-2 sm:p-2.5 rounded-lg ${previsaoFimMes > totalReceitas ? 'bg-orange-500/10' : 'bg-blue-500/10'}`}>
+                <Activity className={`h-4 w-4 sm:h-5 sm:w-5 ${previsaoFimMes > totalReceitas ? 'text-orange-400' : 'text-blue-400'}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className={`text-xl sm:text-3xl font-semibold tracking-tight mb-1 ${previsaoFimMes > totalReceitas ? 'text-orange-400' : 'text-white'}`}>
+                R$ {animatedPrevisao.toFixed(2).replace('.', ',')}
+              </div>
+              <p className={`text-xs ${previsaoFimMes > totalReceitas ? 'text-orange-400/80' : 'text-blue-400/80'}`}>
+                {previsaoFimMes > totalReceitas ? 'Acima das receitas' : 'Dentro do previsto'}
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
       
       {/* Média Diária */}
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '400ms' }}>
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '500ms' }}>
         <Link href="/gastos" className="block h-full">
           <Card 
             style={cardStyle} 
@@ -175,7 +216,7 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
       </div>
       
       {/* Maior Categoria */}
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '500ms' }}>
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '600ms' }}>
         <Link href="/gastos" className="block h-full">
           <Card 
             style={cardStyle} 
@@ -199,9 +240,9 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
         </Link>
       </div>
       
-      {/* Limite Mensal */}
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '600ms' }}>
-        <Link href="/alertas" className="block h-full">
+      {/* Comprometido */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both" style={{ animationDelay: '700ms' }}>
+        <Link href="/gastos" className="block h-full">
           <Card 
             style={cardStyle} 
             onMouseEnter={handleMouseEnter} 
@@ -209,17 +250,17 @@ export function ResumoCards({ totalMes, mediaDiaria, maiorCategoria, limiteMensa
             className="h-full rounded-2xl"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium text-gray-300">Limite Mensal</CardTitle>
-              <div className={`p-2 sm:p-2.5 rounded-lg ${porcentagemUso > 80 ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
-                <AlertCircle className={`h-4 w-4 sm:h-5 sm:w-5 ${porcentagemUso > 80 ? 'text-red-400' : 'text-green-400'}`} />
+              <CardTitle className="text-xs sm:text-sm font-medium text-gray-300">Comprometido</CardTitle>
+              <div className={`p-2 sm:p-2.5 rounded-lg ${percentualComprometido > 80 ? 'bg-red-500/10' : 'bg-green-500/10'}`}>
+                <AlertCircle className={`h-4 w-4 sm:h-5 sm:w-5 ${percentualComprometido > 80 ? 'text-red-400' : 'text-green-400'}`} />
               </div>
             </CardHeader>
             <CardContent>
-              <div className={`text-xl sm:text-3xl font-semibold tracking-tight mb-1 ${porcentagemUso > 80 ? 'text-red-400' : 'text-white'}`}>
-                {animatedPorc.toFixed(1)}%
+              <div className={`text-xl sm:text-3xl font-semibold tracking-tight mb-1 ${percentualComprometido > 80 ? 'text-red-400' : 'text-white'}`}>
+                {animatedComprometido.toFixed(1)}%
               </div>
-              <p className={`text-xs ${porcentagemUso > 80 ? 'text-red-400/80' : 'text-green-400/80'}`}>
-                Do limite de R$ {limiteMensal.toFixed(2).replace('.', ',')}
+              <p className={`text-xs ${percentualComprometido > 80 ? 'text-red-400/80' : 'text-green-400/80'}`}>
+                {baseCalculo === totalReceitas ? 'Das receitas do mês' : 'Do limite mensal'}
               </p>
             </CardContent>
           </Card>
