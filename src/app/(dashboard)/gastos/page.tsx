@@ -181,12 +181,12 @@ export default function GastosPage() {
           <h1 className="text-3xl font-bold tracking-tight">Histórico de Transações</h1>
           <p className="text-gray-500">Veja e filtre todas as suas transações de gastos e receitas.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
+        <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-2">
+          <Button variant="outline" className="flex items-center justify-center gap-2 w-full sm:w-auto">
             <Download className="h-4 w-4" />
             Exportar CSV
           </Button>
-          <Button className="flex items-center gap-2 bg-primary hover:bg-secondary text-white">
+          <Button className="flex items-center justify-center gap-2 bg-primary hover:bg-secondary text-white w-full sm:w-auto">
             <Plus className="h-4 w-4" />
             Adicionar Manual
           </Button>
@@ -194,18 +194,20 @@ export default function GastosPage() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex gap-4 flex-1">
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
             <Input 
               placeholder="Buscar transação por nome..." 
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              className="max-w-sm"
+              className="w-full sm:max-w-sm"
             />
-            <Button variant="secondary">
-              <Filter className="h-4 w-4 mr-2" />
-              Filtros
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-1 sm:justify-end">
+              <Button variant="secondary" className="w-full sm:w-auto">
+                <Filter className="h-4 w-4 mr-2 shrink-0" />
+                Filtros
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
