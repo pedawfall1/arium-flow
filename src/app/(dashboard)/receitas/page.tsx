@@ -198,7 +198,7 @@ export default function ReceitasPage() {
             <select
               value={filtroCategoria}
               onChange={(e) => setFiltroCategoria(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm"
+              className="px-3 py-2 border border-white/10 rounded-md bg-[#1A0A2E] text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50"
             >
               <option value="">Todas as categorias</option>
               {categorias.map(cat => (
@@ -208,7 +208,7 @@ export default function ReceitasPage() {
             <select
               value={filtroPeriodo}
               onChange={(e) => setFiltroPeriodo(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm"
+              className="px-3 py-2 border border-white/10 rounded-md bg-[#1A0A2E] text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50"
             >
               <option value="todos">Todos os períodos</option>
               <option value="mes">Este mês</option>
