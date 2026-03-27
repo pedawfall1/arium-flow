@@ -105,7 +105,7 @@ export default async function DashboardPage() {
   if (diarioData && diarioData.length > 0) {
     // View columns: dia (YYYY-MM-DD), total_gastos, total_receitas
     chartDiarioData = diarioData.map((row: any) => ({
-      day: row.dia?.slice(-2) || '00',  // get 'DD'
+      data: row.dia || '',
       gasto: Number(row.total_gastos || 0),
       receita: Number(row.total_receitas || 0)
     }))
@@ -117,15 +117,16 @@ export default async function DashboardPage() {
     // Initialize all days
     for (let i = 1; i <= daysInMonth; i++) {
       const dayStr = i.toString().padStart(2, '0')
-      dailyData[dayStr] = { gasto: 0, receita: 0 }
+      const dateStr = `${currentMonth}-${dayStr}`
+      dailyData[dateStr] = { gasto: 0, receita: 0 }
     }
     
     // Sum expenses by day
     gastos?.forEach((gasto) => {
       if (gasto.data_gasto?.startsWith(currentMonth)) {
-        const day = gasto.data_gasto.slice(-2)
-        if (dailyData[day]) {
-          dailyData[day].gasto += Number(gasto.valor || 0)
+        const dateStr = gasto.data_gasto.split(' ')[0] // Remove time part if exists
+        if (dailyData[dateStr]) {
+          dailyData[dateStr].gasto += Number(gasto.valor || 0)
         }
       }
     })
@@ -133,18 +134,20 @@ export default async function DashboardPage() {
     // Sum income by day
     receitas?.forEach((receita) => {
       if (receita.data_receita?.startsWith(currentMonth)) {
-        const day = receita.data_receita.slice(-2)
-        if (dailyData[day]) {
-          dailyData[day].receita += Number(receita.valor || 0)
+        const dateStr = receita.data_receita.split(' ')[0] // Remove time part if exists
+        if (dailyData[dateStr]) {
+          dailyData[dateStr].receita += Number(receita.valor || 0)
         }
       }
     })
     
-    chartDiarioData = Object.keys(dailyData).map(day => ({
-      day,
-      gasto: dailyData[day].gasto,
-      receita: dailyData[day].receita
-    }))
+    chartDiarioData = Object.keys(dailyData)
+      .sort() // Sort by date
+      .map(date => ({
+        data: date,
+        gasto: dailyData[date].gasto,
+        receita: dailyData[date].receita
+      }))
   }
 
   return (

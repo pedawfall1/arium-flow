@@ -3,14 +3,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from 'recharts'
 
-export function GraficoDiario({ data }: { data: { day: string, gasto: number, receita: number }[] }) {
+export function GraficoDiario({ data }: { data: { data: string, gasto: number, receita: number }[] }) {
   const formatarMoeda = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
-      currency: 'BRL',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      currency: 'BRL'
     }).format(value)
+  }
+
+  const formatarData = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
   }
 
   return (
@@ -24,11 +27,12 @@ export function GraficoDiario({ data }: { data: { day: string, gasto: number, re
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data}>
                 <XAxis 
-                  dataKey="day" 
+                  dataKey="data" 
                   stroke="#888888" 
                   fontSize={12} 
                   tickLine={false} 
-                  axisLine={false} 
+                  axisLine={false}
+                  tickFormatter={(value) => formatarData(value as string)}
                 />
                 <YAxis
                   stroke="#888888"
@@ -42,7 +46,7 @@ export function GraficoDiario({ data }: { data: { day: string, gasto: number, re
                     formatarMoeda(Number(value)), 
                     name === 'gasto' ? 'Gasto' : 'Receita'
                   ]}
-                  labelFormatter={(label) => `Dia ${label}`}
+                  labelFormatter={(label) => formatarData(label as string)}
                 />
                 <Legend />
                 <Line

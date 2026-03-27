@@ -79,19 +79,19 @@ export function ResumoCards({
             style={cardStyle} 
             onMouseEnter={handleMouseEnter} 
             onMouseLeave={handleMouseLeave}
-            className="h-full rounded-xl p-3 sm:p-4"
+            className="h-full rounded-xl p-4"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0">
-              <CardTitle className="text-xs font-medium text-gray-300">Gasto no Mês</CardTitle>
-              <div className="p-1.5 sm:p-2 bg-purple-500/10 rounded-lg">
-                <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-purple-400" />
+              <CardTitle className="text-sm font-medium text-gray-300">Gasto no Mês</CardTitle>
+              <div className="p-2 bg-purple-500/10 rounded-lg">
+                <DollarSign className="h-4 w-4 text-purple-400" />
               </div>
             </CardHeader>
             <CardContent className="px-0 pb-0">
-              <div className="text-xl font-semibold text-white tracking-tight mb-1 sm:text-3xl">
+              <div className="text-2xl font-semibold text-white tracking-tight mb-1 sm:text-3xl">
                 R$ {animatedTotal.toFixed(2).replace('.', ',')}
               </div>
-              <p className="text-xs text-purple-400/80">Mês atual</p>
+              <p className="text-sm text-purple-400/80">Mês atual</p>
             </CardContent>
           </Card>
         </Link>
@@ -104,19 +104,19 @@ export function ResumoCards({
             style={cardStyle} 
             onMouseEnter={handleMouseEnter} 
             onMouseLeave={handleMouseLeave}
-            className="h-full rounded-xl p-3 sm:p-4"
+            className="h-full rounded-xl p-4"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0">
-              <CardTitle className="text-xs font-medium text-gray-300">Total de Receitas</CardTitle>
-              <div className="p-1.5 sm:p-2 bg-green-500/10 rounded-lg">
-                <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-green-400" />
+              <CardTitle className="text-sm font-medium text-gray-300">Total de Receitas</CardTitle>
+              <div className="p-2 bg-green-500/10 rounded-lg">
+                <TrendingDown className="h-4 w-4 text-green-400" />
               </div>
             </CardHeader>
             <CardContent className="px-0 pb-0">
-              <div className="text-xl font-semibold text-white tracking-tight mb-1 sm:text-3xl">
+              <div className="text-2xl font-semibold text-white tracking-tight mb-1 sm:text-3xl">
                 R$ {animatedReceitas.toFixed(2).replace('.', ',')}
               </div>
-              <p className="text-xs text-green-400/80">Mês atual</p>
+              <p className="text-sm text-green-400/80">Mês atual</p>
             </CardContent>
           </Card>
         </Link>
@@ -129,19 +129,19 @@ export function ResumoCards({
             style={cardStyle} 
             onMouseEnter={handleMouseEnter} 
             onMouseLeave={handleMouseLeave}
-            className="h-full rounded-xl p-3 sm:p-4"
+            className="h-full rounded-xl p-4"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0">
-              <CardTitle className="text-xs font-medium text-gray-300">Saldo Líquido</CardTitle>
-              <div className={`p-1.5 sm:p-2 rounded-lg ${saldoLiquido >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
-                <Wallet className={`h-3 w-3 sm:h-4 sm:w-4 ${saldoLiquido >= 0 ? 'text-green-400' : 'text-red-400'}`} />
+              <CardTitle className="text-sm font-medium text-gray-300">Saldo Líquido</CardTitle>
+              <div className={`p-2 rounded-lg ${saldoLiquido >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
+                <Wallet className={`h-4 w-4 ${saldoLiquido >= 0 ? 'text-green-400' : 'text-red-400'}`} />
               </div>
             </CardHeader>
             <CardContent className="px-0 pb-0">
-              <div className={`text-xl font-semibold tracking-tight mb-1 sm:text-3xl ${saldoLiquido >= 0 ? 'text-white' : 'text-red-400'}`}>
+              <div className={`text-2xl font-semibold tracking-tight mb-1 sm:text-3xl ${saldoLiquido >= 0 ? 'text-white' : 'text-red-400'}`}>
                 {saldoLiquido >= 0 ? '+' : '-'} R$ {animatedSaldo.toFixed(2).replace('.', ',')}
               </div>
-              <p className={`text-xs ${saldoLiquido >= 0 ? 'text-green-400/80' : 'text-red-400/80'}`}>
+              <p className={`text-sm ${saldoLiquido >= 0 ? 'text-green-400/80' : 'text-red-400/80'}`}>
                 Receitas - Gastos
               </p>
             </CardContent>
@@ -156,19 +156,19 @@ export function ResumoCards({
             style={cardStyle} 
             onMouseEnter={handleMouseEnter} 
             onMouseLeave={handleMouseLeave}
-            className="h-full rounded-xl p-3 sm:p-4"
+            className="h-full rounded-xl p-4"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-0">
-              <CardTitle className="text-xs font-medium text-gray-300">Maior Categoria</CardTitle>
-              <div className="p-1.5 sm:p-2 bg-teal-500/10 rounded-lg">
-                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-teal-400" />
+              <CardTitle className="text-sm font-medium text-gray-300">Maior Categoria</CardTitle>
+              <div className="p-2 bg-teal-500/10 rounded-lg">
+                <TrendingUp className="h-4 w-4 text-teal-400" />
               </div>
             </CardHeader>
             <CardContent className="px-0 pb-0">
-              <div className="text-xl font-semibold text-white tracking-tight mb-1 truncate sm:text-3xl" title={maiorCategoria}>
+              <div className="text-2xl font-semibold text-white tracking-tight mb-1 truncate sm:text-3xl" title={maiorCategoria}>
                 {maiorCategoria}
               </div>
-              <p className="text-xs text-teal-400/80">Mais consumida</p>
+              <p className="text-sm text-teal-400/80">Mais consumida</p>
             </CardContent>
           </Card>
         </Link>

@@ -15,7 +15,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
         isOpen={isMobileMenuOpen} 
         onClose={() => setIsMobileMenuOpen(false)} 
       />
-      <main className="pt-12 md:pt-16 md:pl-64 min-h-screen">
+      <main className="pt-16 md:pl-64 min-h-screen">
         <div className="p-3 md:p-8 max-w-7xl mx-auto flex-1">
           {children}
         </div>
