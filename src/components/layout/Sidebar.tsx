@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Receipt, Target, Bell, Settings, LogOut, X } from 'lucide-react'
+import { LayoutDashboard, Receipt, Target, Bell, Settings, LogOut, X, TrendingUp } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const routes = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/gastos', label: 'Gastos', icon: Receipt },
+  { href: '/receitas', label: 'Receitas', icon: TrendingUp },
   { href: '/metas', label: 'Metas', icon: Target },
   { href: '/alertas', label: 'Alertas', icon: Bell },
   { href: '/configuracoes', label: 'Configurações', icon: Settings },
